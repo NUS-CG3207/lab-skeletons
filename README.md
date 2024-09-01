@@ -6,7 +6,7 @@
 
 * Please DO NOT FORK this repository to do your lab work. Forks of this repository will be public, exposing your work to the internet. Submissions of code from public repositories will be considered plagiarism, even if they're your own repository!
 
-* Educators may fork this repository (and all others in this organisation) for their own 
+* Educators are welcome to fork this repository (and all others in this organisation) for their own teaching.
 
 * Create a separate folder to contain a Vivado project, which you can use for Lab 2 through 4. 
 
