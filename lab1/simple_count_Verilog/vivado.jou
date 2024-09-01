@@ -1,0 +1,41 @@
+#-----------------------------------------------------------
+# Vivado v2015.2 (64-bit)
+# SW Build 1266856 on Fri Jun 26 16:35:25 MDT 2015
+# IP Build 1264090 on Wed Jun 24 14:22:01 MDT 2015
+# Start of session at: Sun Aug 21 17:45:59 2016
+# Process ID: 8784
+# Log file: C:/Users/Shahzor Ahmad/AppData/Roaming/Xilinx/Vivado/vivado.log
+# Journal file: C:/Users/Shahzor Ahmad/AppData/Roaming/Xilinx/Vivado\vivado.jou
+#-----------------------------------------------------------
+start_gui
+create_project simple_count_Verilog F:/Teaching/NUS/TA/CG3207/Lab/__S1_AY2016-17/Work/Lab1/simple_count_Verilog -part xc7a100tcsg324-1
+file mkdir F:/Teaching/NUS/TA/CG3207/Lab/__S1_AY2016-17/Work/Lab1/simple_count_Verilog/simple_count_Verilog.srcs/sources_1/new
+set_property simulator_language Verilog [current_project]
+close [ open F:/Teaching/NUS/TA/CG3207/Lab/__S1_AY2016-17/Work/Lab1/simple_count_Verilog/simple_count_Verilog.srcs/sources_1/new/simple_count.v w ]
+add_files F:/Teaching/NUS/TA/CG3207/Lab/__S1_AY2016-17/Work/Lab1/simple_count_Verilog/simple_count_Verilog.srcs/sources_1/new/simple_count.v
+import_files -fileset constrs_1 -force -norecurse {{C:/Users/Shahzor Ahmad/Desktop/Nexys4_Master.xdc}}
+update_compile_order -fileset sources_1
+update_compile_order -fileset sim_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+launch_runs impl_1 -jobs 2
+wait_on_run impl_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+open_hw
+connect_hw_server -url localhost:3121
+current_hw_target [get_hw_targets */xilinx_tcf/Digilent/210274533267A]
+set_property PARAM.FREQUENCY 15000000 [get_hw_targets */xilinx_tcf/Digilent/210274533267A]
+open_hw_target
+current_hw_device [lindex [get_hw_devices] 0]
+refresh_hw_device -update_hw_probes false [lindex [get_hw_devices] 0]
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+set_property PROBES.FILE {} [lindex [get_hw_devices] 0]
+set_property PROGRAM.FILE {F:/Teaching/NUS/TA/CG3207/Lab/__S1_AY2016-17/Work/Lab1/simple_count_Verilog/simple_count_Verilog.runs/impl_1/simple_count.bit} [lindex [get_hw_devices] 0]
+program_hw_devices [lindex [get_hw_devices] 0]
+refresh_hw_device [lindex [get_hw_devices] 0]
+close_hw_target {localhost:3121/xilinx_tcf/Digilent/210274533267A}
+close_hw_target
+archive_project F:/Teaching/NUS/TA/CG3207/Lab/__S1_AY2016-17/Work/Lab1/simple_count_Verilog.xpr.zip -force
