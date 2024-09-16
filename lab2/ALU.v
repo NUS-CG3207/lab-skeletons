@@ -32,74 +32,66 @@
 */
 
 module ALU(
-    input [31:0] Src_A,
-    input [31:0] Src_B,
-    input [3:0] ALUControl, // 0000 for add, 0001 for sub, 1110 for and, 1100 for or, 0010 for sll, 1010 for srl, 1011 for sra.
-    output reg [31:0] ALUResult,
-    output [2:0] ALUFlags //{eq, lt, ltu}
-    );
+	input [31:0] Src_A,
+	input [31:0] Src_B,
+	input [3:0] ALUControl, // 0000 for add, 0001 for sub, 1110 for and, 1100 for or, 0010 for sll, 1010 for srl, 1011 for sra.
+	output reg [31:0] ALUResult,
+	output [2:0] ALUFlags //{eq, lt, ltu}
+);
     
-    // Shifter signals
+	// Shifter signals
 	wire [1:0] Sh ;
 	wire [4:0] Shamt5 ;
 	wire [31:0] ShIn ;
 	wire [31:0] ShOut ;
 	
-    // Other signals
-    wire [32:0] S_wider ;
-    reg [32:0] Src_A_comp ;
-    reg [32:0] Src_B_comp ;
-    reg [32:0] C_0 ;
-    wire N, Z, C, V; 	// optional intermediate values to derive eq, lt, ltu
-			// Hint: We need to care about V only for subtraction
+	// Other signals
+	wire [32:0] S_wider ;
+	reg [32:0] Src_A_comp ;
+	reg [32:0] Src_B_comp ;
+	reg [32:0] C_0 ;
+	wire N, Z, C, V; 	// optional intermediate values to derive eq, lt, ltu
+				// Hint: We need to care about V only for subtraction
 	
-    assign S_wider = Src_A_comp + Src_B_comp + C_0 ;
+	assign S_wider = Src_A_comp + Src_B_comp + C_0 ;
     
-    always@(Src_A, Src_B, ALUControl, S_wider, ShOut) begin
+	always@(Src_A, Src_B, ALUControl, S_wider, ShOut) begin
         // default values; help avoid latches
-        C_0 = 0 ; 
-        Src_A_comp = {1'b0, Src_A} ;
-        Src_B_comp = {1'b0, Src_B} ;
-        ALUResult = Src_B ;
+		C_0 = 0 ; 
+		Src_A_comp = {1'b0, Src_A} ;
+		Src_B_comp = {1'b0, Src_B} ;
     
-        case(ALUControl)
-            4'b0000:	//add
-            begin
-                ALUResult = S_wider[31:0] ;
-            end
-            
-            4'b0001:	//sub
-            begin
-                C_0[0] = 1 ;  
-                Src_B_comp = {1'b0, ~ Src_B} ;
-                ALUResult = S_wider[31:0] ;
-            end
-            
-            4'b1110: ALUResult = Src_A & Src_B ;	// and
-            4'b1100: ALUResult = Src_A | Src_B ; 	// or
-            
-            // include cases for shifts				// shifts
-            										
-            default: ALUResult = 32'bx;
-        endcase
-    end
+		case(ALUControl)
+			4'b0000: ALUResult = S_wider[31:0] ;	//add          
+	            	4'b0001: begin				//sub
+				C_0[0] = 1 ;  
+				Src_B_comp = {1'b0, ~ Src_B} ;
+				ALUResult = S_wider[31:0] ;
+			end
+	            	4'b1110: ALUResult = Src_A & Src_B ;	// and
+	            	4'b1100: ALUResult = Src_A | Src_B ; 	// or
+	            
+			// include cases for shifts		// shifts
+			default: ALUResult = 32'bx;
+	        endcase
+	    end
       
-    assign Z = (ALUResult == 0) ? 1 : 0 ;
+	assign Z = (ALUResult == 0) ? 1 : 0 ;
     
-    assign ALUFlags = {Z, 1'b0, 1'b0} ; //{eq, lt, ltu} - all except eq are placeholders. 
-    					// todo: Will need to be modified in lab 3 to support blt, bltu, bge, bgeu.
+	assign ALUFlags = {Z, 1'b0, 1'b0} ; 	//{eq, lt, ltu} - all except eq are placeholders. 
+    						// todo: Will need to be modified in lab 3 to support blt, bltu, bge, bgeu.
     
     
-    // todo: make shifter connections here
-    // Sh signals can be derived directly from the appropriate ALUControl bits
+	// todo: make shifter connections here
+	// Sh signals can be derived directly from the appropriate ALUControl bits
     
     
 	// Instantiate Shifter        
-    Shifter Shifter1(
-                    Sh,
-                    Shamt5,
-                    ShIn,
-                    ShOut
-                );
+	Shifter Shifter1(
+                Sh,
+        	Shamt5,
+        	ShIn,
+        	ShOut
+        );
      
 endmodule
