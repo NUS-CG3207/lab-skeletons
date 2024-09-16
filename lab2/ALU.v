@@ -50,7 +50,8 @@ module ALU(
     reg [32:0] Src_A_comp ;
     reg [32:0] Src_B_comp ;
     reg [32:0] C_0 ;
-    wire N, Z, C, V; // optional intermediate values to derive eq, lt, ltu
+    wire N, Z, C, V; 	// optional intermediate values to derive eq, lt, ltu
+			// Hint: We need to care about V only for subtraction
 	
     assign S_wider = Src_A_comp + Src_B_comp + C_0 ;
     
