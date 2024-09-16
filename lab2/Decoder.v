@@ -45,7 +45,10 @@ module Decoder(
     output reg [3:0] ALUControl	// 0000 for add, 0001 for sub, 1110 for and, 1100 for or, 0010 for sll, 1010 for srl, 1011 for sra, 0001 for branch, 0000 for all others.
     					// Note that the most significant 3 bits are Funct3 for all DP instrns. LSB is the same as Funct[5] for DPReg type and DPImm_shifts. For other DPImms, Funct[5] is 0.
     					// It is the same as sub for branches, and add for all others not mentioned in the line above.
-    );           
+    ); 
+// Change wire to reg if assigned inside a procedural (always) block. However, where it is easy enough, use assign instead of always.
+// A 2-1 multiplexing can be done easily using an assign with a ternary operator
+// For multiplexing with number of inputs > 2, a case construct within an always block is a natural fit. DO NOT to use nested ternary assignment operator as it hampers the readability of your code.
     
     	// todo: Implement Decoder here
 	
