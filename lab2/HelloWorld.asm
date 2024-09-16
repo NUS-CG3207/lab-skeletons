@@ -11,6 +11,7 @@
 #----------------------------------------------------------------------------------
 
 # This sample program prints "Welcome to CG3207" in response to "A\r" (A+Enter) received from Console. There should be sufficient time gap between the press of 'A' and '\r'
+# if the processor is run at a low freq.
 
 .eqv LSB_MASK 0xFF
 
@@ -56,8 +57,9 @@ ECHO_CR:
 	beq t0, t2, WAIT_CR 	# perhaps the user is trying again before completing the pervious attempt, or 'A' was repeated. Just a '\r' needed as we already got an 'A'
 	li t1, '\r'
 	bne t0, t1, WAIT_A	# not the correct pattern. try all over again.
+	# "A\r" received. 
 	la a0, string1		# a0 stores the value to be displayed. This is the argument passed to PRINT_S
-PRINT_S:			# "A\r" received. Call PRINT_S subroutine (not implemented as a subroutine for now)		
+PRINT_S:			# Call PRINT_S subroutine (not implemented as a subroutine for now as jal doesn't have link and jalr is not implemented)		
 	lw t0, (a0)		# load the word (4 characters) to be displayed
 	# sw t0, (s11)		# write to seven segment display
 	li t2, 4		# byte counter
@@ -75,7 +77,7 @@ NEXTCHAR:
 	jal PRINT_S
 halt:	
 	jal halt		# infinite loop to halt computation. A program should not "terminate" without an operating system to return control to
-				# keep halt: jal halt as the last line of your code.
+				# keep halt: jal halt as the last line of your code, though not strictly necessary if there is an infinite loop somewhere.
 				
 # ------- <code memory (ROM mapped to Instruction Memory) ends>			
 				
@@ -128,4 +130,4 @@ SEVENSEG: .word	0x0		# 0x00002418	# Address of 7-Segment LEDs. Used only in Lab 
 ########################### Ignore the code below #######################################
 	#auipc ra,0	# If using a subroutine, store the return value manually since we do not have link
 	#addi ra, 12	# just before a jump to store PC+4 in ra
-	# not using the subroutine for now, as the only way to return is jalr which isnt implemented for Lab 2
+	# not using the subroutine for now, as the only way to return is jalr which isn't implemented for Lab 2
