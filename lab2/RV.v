@@ -67,19 +67,17 @@ module RV(
     wire [6:0] Opcode ;
     wire [2:0] Funct3 ;
     wire [6:0] Funct7 ;
-    wire PCS ;
-    wire Jump ;
+    wire [1:0] PCS ;
     wire RegWrite ;
     //wire MemWrite ;
     wire MemtoReg ;
-    wire [1:0] ALUSrcA ;
+    //wire [1:0] ALUSrcA ;
     wire ALUSrcB ;
     //wire [2:0] ImmSrc ;
     wire [3:0] ALUControl ;
     
-    // CondLogic signals
-    //wire PCS;
-    //wire Jump;
+    // PC_Logic signals
+    //wire [1:0] PCS
     //wire [2:0] Funct3;
     //wire [2:0] ALUFlags;
     wire PCSrc;
@@ -106,8 +104,8 @@ module RV(
     assign MemRead = MemtoReg; // This is needed for the proper functionality of some devices such as UART CONSOLE
     assign WE_PC = 1 ; // Will need to control it for multi-cycle operations (Multiplication, Division) and/or Pipelining with hazard hardware.
     // todo: other datapath connections here
-=
-      
+
+	
     // Instantiate RegFile
     RegFile RegFile1( 
                     CLK,
@@ -133,24 +131,21 @@ module RV(
                     Funct3,
                     Funct7,
                     PCS,
-                    Jump,
                     RegWrite,
                     MemWrite,
                     MemtoReg,
-                    ALUSrcA,
                     ALUSrcB,
                     ImmSrc,
                     ALUControl
                 );
                 
-    // Instantiate CondLogic
-	CondLogic CondLogic1(
+    // Instantiate PC_Logic
+	PC_Logic PC_Logic1(
                     PCS,
-                    Jump,
-					Funct3,
-					ALUFlags,
-					PCSrc
-				);
+                    Funct3,
+                    ALUFlags,
+                    PCSrc
+		);
                 
     // Instantiate ALU        
     ALU ALU1(
