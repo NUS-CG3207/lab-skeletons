@@ -50,9 +50,8 @@ module ALU(
     reg [32:0] Src_A_comp ;
     reg [32:0] Src_B_comp ;
     reg [32:0] C_0 ;
-    wire N, Z, C ;
-    reg V ;
-    
+    wire N, Z, C, V; // optional intermediate values to derive eq, lt, ltu
+	
     assign S_wider = Src_A_comp + Src_B_comp + C_0 ;
     
     always@(Src_A, Src_B, ALUControl, S_wider, ShOut) begin
@@ -61,13 +60,11 @@ module ALU(
         Src_A_comp = {1'b0, Src_A} ;
         Src_B_comp = {1'b0, Src_B} ;
         ALUResult = Src_B ;
-        V = 0 ;
     
         case(ALUControl)
             4'b0000:	//add
             begin
                 ALUResult = S_wider[31:0] ;
-		// V = ( Src_A[31] ~^ Src_B[31] )  & ( Src_B[31] ^ S_wider[31] ); // Not needed for RISC-V as we care about V only in subtraction          
             end
             
             4'b0001:	//sub
@@ -75,7 +72,6 @@ module ALU(
                 C_0[0] = 1 ;  
                 Src_B_comp = {1'b0, ~ Src_B} ;
                 ALUResult = S_wider[31:0] ;
-                V = ( Src_A[31] ^ Src_B[31] )  & ( Src_B[31] ~^ S_wider[31] );       
             end
             
             4'b1110: ALUResult = Src_A & Src_B ;	// and
@@ -87,12 +83,10 @@ module ALU(
         endcase
     end
       
-    assign N = ALUResult[31] ;
     assign Z = (ALUResult == 0) ? 1 : 0 ;
-    assign C = S_wider[32] ;
     
     assign ALUFlags = {Z, 1'b0, 1'b0} ; //{eq, lt, ltu} - all except eq are placeholders. 
-    									// todo: Will need to be modified in lab 3 to support blt, bltu, bge, bgeu.
+    					// todo: Will need to be modified in lab 3 to support blt, bltu, bge, bgeu.
     
     
     // todo: make shifter connections here
