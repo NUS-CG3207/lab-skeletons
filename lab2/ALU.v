@@ -67,7 +67,7 @@ module ALU(
             4'b0000:	//add
             begin
                 ALUResult = S_wider[31:0] ;
-                V = ( Src_A[31] ~^ Src_B[31] )  & ( Src_B[31] ^ S_wider[31] );          
+		// V = ( Src_A[31] ~^ Src_B[31] )  & ( Src_B[31] ^ S_wider[31] ); // Not needed for RISC-V as we care about V only in subtraction          
             end
             
             4'b0001:	//sub
