@@ -10,7 +10,7 @@
 #--		(vi) retain this notice in this file and any files derived from this.
 #----------------------------------------------------------------------------------
 
-# This sample program prints "Welcome to CG3207" in response to "A\r" (A+Enter) received from Console. There should be sufficient time gap between the press of 'A' and '\r' 
+# This sample program prints "Welcome to CG3207" in response to "A\r" (A+Enter) received from Console. There should be a sufficient time gap between the press of 'A' and '\r' 
 # if the processor is run at a low freq.
 # Important: This version requires full jal and jalr implementation (including the link functionality)
 
@@ -20,9 +20,9 @@
 .text	## IROM segment 0x00000000-0x000001FC
 # Total number of instructions should not exceed 128 (127 excluding the last line 'halt B halt').
 
-# Note : see the wiki regarding the pseudoinstructions li and la. 
+# Note: see the wiki regarding the pseudoinstructions li and la. 
 # Pseudoinstructions may be implemented using more than one actual instruction. See the assembled code in the Execute tab of RARS
-# You can also use the actual register numbers directly. For example, instead of s6, you can write x22
+# You can also use the actual register numbers directly. For example, instead of s6 (ABI name), you can write x22, but the former is preferred
 
 ### beginning of main program
 main:   
@@ -61,8 +61,8 @@ ECHO_CR:
 	bne t0, t1, WAIT_A	# not the correct pattern. try all over again.
 				# "A\r" received. Call PRINT_S subroutine
 	la a0, string1		# a0 stores the value to be displayed. This is the argument passed to PRINT_S
-	jal PRINT_S		# PRINT_S function call. Note that if rd is not specified, assembler will generate code for rd=ra (x1)
-	jal WAIT_A		# returned from the PRINT_S function. Go back to the beginning. ra is saved, but will not be used.
+	jal PRINT_S		# PRINT_S function call. Note that if rd is not specified, assembler will generate code for rd=ra (x1). Does jal ra, PRINT_S
+	j WAIT_A		# returned from the PRINT_S function. Go back to the beginning.
 ### end of main program
 	
 ### beginning of PRINT_S function
@@ -75,7 +75,7 @@ NEXTCHAR:
 	beqz t1, NEXTCHAR	# not ready, continue waiting
 	and t1, t0, s6 		# apply LSB_MASK
 	bnez t1, DONT_RETURN 	# if t1 is not zero, null terminator ('\0') is not detected, Do not return from the function
-	jalr zero, 0(ra)	# null terminator detected, return from the function. 
+	ret			# null terminator detected, return from the function. Does jalr zero, 0(ra)
 DONT_RETURN:
 	sw t1, (s10) 		# write to UART the Byte(4-t2) of the original word (composed of 4 characters) in (7:0) of the word to be written (remember, we can only write words, and LEDs/UART displays only (7:0) of the written word)
 	srli t0, t0, 8	 	# shift so that the next character comes into LSB
@@ -83,12 +83,12 @@ DONT_RETURN:
 	sub t2, t2, t1		# decrement the loop counter
 	bnez t2, NEXTCHAR	# check and print the next character in the word
 	addi a0, a0, 4		# point to next word (4 characters)
-	jal zero, PRINT_S	# Specify zero explicitly as we do not want to overwrite ra.
+	j PRINT_S		# Specify zero as rd as we do not want to overwrite ra.
 ### end of PRINT_S function
 
 halt:	
-	jal halt		# infinite loop to halt computation. A program should not "terminate" without an operating system to return control to
-				# keep halt: jal halt as the last line of your code,though not strictly necessary if there is an infinite loop somewhere. 
+	j halt			# infinite loop to halt computation. A program should not "terminate" without an operating system to return control to
+				# keep halt: j halt as the last line of your code, though not strictly necessary if there is an infinite loop somewhere. 
 				
 # ------- <code memory (ROM mapped to Instruction Memory) ends>			
 				
@@ -125,12 +125,12 @@ DRAM:
 # ------- <memory-mapped input-output (peripherals) begins>
 .align 9 ## MMIO segment. 0x00002400-0x00002418
 MMIO:
-LEDS: .word 0x0			# 0x00002400	# Address of LEDs. //volatile unsigned int * LEDS = (unsigned int*)0x00000C00#  
-DIPS: .word 0x0			# 0x00002404	# Address of DIP switches. //volatile unsigned int * DIPS = (unsigned int*)0x00000C04#
-PBS: .word 0x0			# 0x00002408	# Address of Push Buttons. Used only in Lab 2
-CONSOLE: .word 0x0		# 0x0000240C	# Address of UART. Used only in Lab 2 and later
-CONSOLE_IN_valid: .word 0x0	# 0x00002410	# Address of UART. Used only in Lab 2 and later
-CONSOLE_OUT_ready: .word 0x0	# 0x00002414	# Address of UART. Used only in Lab 2 and later
-SEVENSEG: .word	0x0		# 0x00002418	# Address of 7-Segment LEDs. Used only in Lab 2 and later
+LEDS: .word 0x0			# 0x00002400	# Location simulating LEDs. //volatile unsigned int* LEDS = (unsigned int*)0x00002400#  
+DIPS: .word 0x0			# 0x00002404	# Location simulating DIP switches. //volatile unsigned int* DIPS = (unsigned int*)0x00002404#
+PBS: .word 0x0			# 0x00002408	# Location simulating Push Buttons. Used only in Lab 2
+CONSOLE: .word 0x0		# 0x0000240C	# Location simulating UART. Used only in Lab 2 and later
+CONSOLE_IN_valid: .word 0x0	# 0x00002410	# Location simulating UART input valid flag. Used only in Lab 2 and later
+CONSOLE_OUT_ready: .word 0x0	# 0x00002414	# Location simulating UART ready for output flag. Used only in Lab 2 and later
+SEVENSEG: .word	0x0		# 0x00002418	# Location simulating 7-Segment LEDs. Used only in Lab 2 and later
 
 # ------- <memory-mapped input-output (peripherals) ends>
