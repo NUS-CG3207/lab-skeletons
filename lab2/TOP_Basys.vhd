@@ -10,7 +10,7 @@
 -- Dependencies: Uses uart.vhd by (c) Peter A Bennett
 --
 -- Revision 0.03
--- Additional Comments: See the notes below. The interface (entity) as well as implementation (architecture) can be modified
+-- Additional Comments: See the notes below. The interface (entity), as well as implementation (architecture), can be modified
 ----------------------------------------------------------------------------------
 --	License terms :
 --	You are free to use this code as long as you
@@ -51,13 +51,13 @@ entity TOP is
 			-- If read at a rate of > ~100 Hz, debouncing may be necessary. This can be fixed in software by ensuring that we don't read too fast (a few 10s of ms gap between reads).
 			PB    			: in  STD_LOGIC_VECTOR (N_PBs-1 downto 0);  -- PB switch inputs. Not debounced - see the comment above.
 			LED 			: out  STD_LOGIC_VECTOR (15 downto 0); -- LEDs.
-			-- (15 downto 8) mapped to the address 0x00000C00
+			-- (15 downto 8) writeable by the software
 			-- (7) showing the divided clock
 			-- (6 downto 0) showing PC(8 downto 2)
 			SevenSegAn		: out  STD_LOGIC_VECTOR (N_SEVEN_SEG_DIGITs-1 downto 0); -- 7 Seg anodes. Common anodes - 4 for Basys, 8 for Nexys
 			SevenSegCat		: out  STD_LOGIC_VECTOR (6 downto 0); -- 7 Seg cathodes
-			TX 				: out STD_LOGIC;	-- UART Tx
-			RX 				: in  STD_LOGIC;	-- UART Rx
+			TX 			: out STD_LOGIC;	-- UART Tx
+			RX 			: in  STD_LOGIC;	-- UART Rx
 			PAUSE			: in  STD_LOGIC;  	-- Pause -> BTNU (Up push button)
 			RESET			: in  STD_LOGIC; 	-- Reset -> BTND (Down push button)
 			CLK_undiv		: in  STD_LOGIC 	-- 100MHz clock. Converted to a lower frequency using DIV_PROCESS before being fed to the Wrapper.
@@ -86,35 +86,35 @@ component Wrapper is
 		);
 		Port 
 		(
-			DIP 				: in  STD_LOGIC_VECTOR (N_DIPs-1 downto 0); 
-			PB    				: in  STD_LOGIC_VECTOR (N_PBs-1 downto 0);
-			LED_OUT				: out  STD_LOGIC_VECTOR (N_LEDs_OUT-1 downto 0);
-			LED_PC 				: out  STD_LOGIC_VECTOR (6 downto 0);
+			DIP 			: in  STD_LOGIC_VECTOR (N_DIPs-1 downto 0); 
+			PB    			: in  STD_LOGIC_VECTOR (N_PBs-1 downto 0);
+			LED_OUT			: out  STD_LOGIC_VECTOR (N_LEDs_OUT-1 downto 0);
+			LED_PC 			: out  STD_LOGIC_VECTOR (6 downto 0);
 			SEVENSEGHEX 		: out STD_LOGIC_VECTOR (31 downto 0);
 			CONSOLE_OUT 		: out STD_LOGIC_VECTOR (7 downto 0);
 			CONSOLE_OUT_ready	: in STD_LOGIC;
 			CONSOLE_OUT_valid 	: out STD_LOGIC;
-			CONSOLE_IN 			: in STD_LOGIC_VECTOR (7 downto 0);
+			CONSOLE_IN 		: in STD_LOGIC_VECTOR (7 downto 0);
 			CONSOLE_IN_valid 	: in STD_LOGIC;
 			CONSOLE_IN_ack 		: out STD_LOGIC;
-			RESET				: in  STD_LOGIC;
-			CLK					: in  STD_LOGIC
+			RESET			: in  STD_LOGIC;
+			CLK			: in  STD_LOGIC
 		);
 end component Wrapper;
 
 ----------------------------------------------------------------------------
 -- Wrapper signals
 ----------------------------------------------------------------------------  
-signal	LED_OUT				: STD_LOGIC_VECTOR (N_LEDs_OUT-1 downto 0);
-signal	LED_PC 				: STD_LOGIC_VECTOR (6 downto 0); 		
+signal	LED_OUT			: STD_LOGIC_VECTOR (N_LEDs_OUT-1 downto 0);
+signal	LED_PC 			: STD_LOGIC_VECTOR (6 downto 0); 		
 signal	SEVENSEGHEX 		: STD_LOGIC_VECTOR (31 downto 0); 		
 signal	CONSOLE_OUT 		: STD_LOGIC_VECTOR (7 downto 0);
 signal  CONSOLE_OUT_ready	: STD_LOGIC := '1';
 signal	CONSOLE_OUT_valid 	: STD_LOGIC;
-signal	CONSOLE_IN 			: STD_LOGIC_VECTOR (7 downto 0);
+signal	CONSOLE_IN 		: STD_LOGIC_VECTOR (7 downto 0);
 signal	CONSOLE_IN_valid 	: STD_LOGIC;
 signal	CONSOLE_IN_ack 		: STD_LOGIC;	
-signal	CLK					: STD_LOGIC;
+signal	CLK			: STD_LOGIC;
 
 ----------------------------------------------------------------------------
 -- UART Constants
@@ -131,7 +131,7 @@ component UART is
             CLOCK_FREQUENCY     : positive
         );
     port (  -- General
-            CLOCK		        : in      std_logic;
+            CLOCK		: in      std_logic;
             RESET               : in      std_logic;    
             DATA_STREAM_IN      : in      std_logic_vector(7 downto 0);
             DATA_STREAM_IN_STB  : in      std_logic;
@@ -163,12 +163,12 @@ signal recv_state : states := WAITING;
 signal RX_MSF1, RX_MSF2 : std_logic := '1'; -- metastable filter		
 
 -- UART console related
-signal CONSOLE_OUT_valid_prev : std_logic := '0';
-signal CONSOLE_IN_ack_prev : std_logic := '0';
-signal uart_data_out_stb_prev: std_logic := '0'; 
+signal CONSOLE_OUT_valid_prev 	: std_logic := '0';
+signal CONSOLE_IN_ack_prev 	: std_logic := '0';
+signal uart_data_out_stb_prev	: std_logic := '0'; 
 
-signal RESET_INT, RESET_EFF : STD_LOGIC; 	-- internal and effective reset, for future use.
-signal RESET_EXT	: std_logic; 			-- internal reset
+signal RESET_INT, RESET_EFF 	: STD_LOGIC; 	-- internal and effective reset, for future use.
+signal RESET_EXT		: std_logic; 			-- internal reset
 ----------------------------------------------------------------	
 ----------------------------------------------------------------
 -- <TOP architecture>
@@ -197,19 +197,19 @@ RESET_INT <= '0'; 						-- internal reset, for future use.
 ----------------------------------------------------------------------------			
 Wrapper1 : Wrapper
 port map (			
-		DIP 			 	=> 		DIP 			,
-		PB    			 	=>   	PB    			,
-		LED_OUT			 	=>   	LED_OUT			,
-		LED_PC 			 	=>   	LED_PC 			,
+		DIP 			=> 	DIP 		,
+		PB    			=>   	PB    		,
+		LED_OUT			=>   	LED_OUT		,
+		LED_PC 			=>   	LED_PC 		,
 		SEVENSEGHEX 	 	=>   	SEVENSEGHEX 	,
 		CONSOLE_OUT 	 	=>   	CONSOLE_OUT 	,
-		CONSOLE_OUT_ready	=>		CONSOLE_OUT_ready,
+		CONSOLE_OUT_ready	=>	CONSOLE_OUT_ready,
 		CONSOLE_OUT_valid  	=>   	CONSOLE_OUT_valid,
-		CONSOLE_IN 		 	=>     	CONSOLE_IN 		,
+		CONSOLE_IN 		=>     	CONSOLE_IN 	,
 		CONSOLE_IN_valid  	=>    	CONSOLE_IN_valid,
 		CONSOLE_IN_ack 	 	=>     	CONSOLE_IN_ack 	,
-		RESET			 	=>     	RESET_EFF		,
-		CLK				 	=>     	CLK	
+		RESET		 	=>     	RESET_EFF	,
+		CLK		 	=>     	CLK	
 );
 
 ----------------------------------------------------------------------------
@@ -221,7 +221,7 @@ generic map (
 		CLOCK_FREQUENCY     => CLOCK_FREQUENCY
 )
 port map (  
-		CLOCK		        => CLK_undiv,
+		CLOCK		    => CLK_undiv,
 		RESET               => RESET_EXT,
 		DATA_STREAM_IN      => uart_data_in,
 		DATA_STREAM_IN_STB  => uart_data_in_stb,
@@ -244,28 +244,28 @@ if CLK_undiv'event and CLK_undiv = '1' then
 		uart_data_in_stb        <= '0';
 		uart_data_out_ack       <= '0';
 		uart_data_in            <= (others => '0');
-		recv_state			  	<= WAITING;
+		recv_state		<= WAITING;
 		uart_data_out_stb_prev 	<= '0';
-		RX_MSF1					<= '1';
-		RX_MSF2					<= '1';
-		CONSOLE_OUT_ready		<= '1';
-		CONSOLE_IN_valid 		<= '0';
-		CONSOLE_IN				<= (others => '0'); -- not really required, as the valid flag will be 0 on reset. 
+		RX_MSF1			<= '1';
+		RX_MSF2			<= '1';
+		CONSOLE_OUT_ready	<= '1';
+		CONSOLE_IN_valid 	<= '0';
+		CONSOLE_IN		<= (others => '0'); -- not really required, as the valid flag will be 0 on reset. 
    else
-   		RX_MSF1					<= RX; -- metastable filter
-   		RX_MSF2					<= RX_MSF1; -- metastable filter
+   		RX_MSF1			<= RX; -- metastable filter
+   		RX_MSF2			<= RX_MSF1; -- metastable filter
 		---------------------
 		-- Sending
 		---------------------
 		uart_data_out_ack <= '0';
 		if CONSOLE_OUT_valid = '1' and CONSOLE_OUT_valid_prev = '0' then-- CONSOLE_OUT_ready = '1' is checked in the Wrapper, which ensures that the next character is sent only if the previous character has been sent. Hence, there is no need to check it here
-			uart_data_in <= CONSOLE_OUT;
-			uart_data_in_stb <= '1';
+			uart_data_in 		<= CONSOLE_OUT;
+			uart_data_in_stb 	<= '1';
 			CONSOLE_OUT_ready 	<= '0';
 		end if;
 		if uart_data_in_ack = '1' then
-			uart_data_in_stb    <= '0';
-			CONSOLE_OUT_ready 	<= '1';
+			uart_data_in_stb    	<= '0';
+			CONSOLE_OUT_ready	<= '1';
 		end if;
 		---------------------
 		-- Receiving
