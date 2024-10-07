@@ -36,15 +36,15 @@
 
 /*
 ******* New features in V2 *******
-- Abilty to use the hexadecimal text dump from RARS directly without any conversion software or copy-pasting needed.
+- Ability to use the hexadecimal text dump from RARS directly without any conversion software or copy-pasting needed.
 - Instruction and data memory sizes can be bigger than 128 words. Be mindful of the potentially increased synthesis time though.
-- Addresses except IROM_BASE and DATA_MEM_BASE are heirarhically derived instead of hard-coding
-- Byte and half-word writes to data memory and 7-segment display (sb and sh support) - aligned memory addresses and pre-shifted/aligned data required. Please read the relevant comments carefully.
-- 	Note: byte and half-word read doesn't require any Wrapper support - you can simply read the whole byte, extract the byte/half-word and extend as necessary.
-- Possible to use a different Memory Configuration from RARS, *except* supporing 32'hFFFF0000 as the MMIO base in the RARS default. MMIO_BASE = DRAM_BASE + 2**DRAM_DEPTH_BITS in all configs.
-- Possible to use block RAMs (sync read) for instruction and data memories in pipelined version. Allows faster synthesis times and possibly clock rates for larger memory sizes.
-- Renamed for simplicity and parity with assembly program labels: INSTR_MEM->IROM; DATA_CONST_MEM->DROM; DATA_VAR_MEM->DRAM
-- Needs RVv2.v, and ProgramCounterv2.v (necessary only if the Memory Configuration is changed in RARS).
+- Addresses except IROM_BASE and DATA_MEM_BASE are hierarchically derived instead of hard-coding.
+- Byte and half-word write to data memory and 7-segment display (sb and sh support) - aligned memory addresses and pre-shifted/aligned data required. Please read the relevant comments carefully.
+--Note: byte and half-word read don't require any Wrapper support - you can simply read the whole byte, extract the byte/half-word, and extend as necessary.
+- Possible to use a different Memory Configuration from RARS, *except* supporting 32'hFFFF0000 as the MMIO base in the RARS default. MMIO_BASE = DRAM_BASE + 2**DRAM_DEPTH_BITS in all configs.
+- Possible to use block RAMs (sync read) for instruction and data memories in the pipelined version. Allows faster synthesis times and possibly clock rates for larger memory sizes.
+- Renamed for simplicity and concistency with assembly program labels: INSTR_MEM->IROM; DATA_CONST_MEM->DROM; DATA_VAR_MEM->DRAM
+- Updated files: Wrapperv2.v, RVv2.v, and ProgramCounterv2.v (necessary only if the Memory Configuration is changed in RARS).
 */
 
 /*
