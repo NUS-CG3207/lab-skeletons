@@ -63,33 +63,33 @@ module Wrapper
 		                             // [2:0] -> BTNL, BTNC, BTNR. Note that BTNU is used as PAUSE and BTND is used as RESET
 )
 (
-	input  [N_DIPs-1:0] DIP, 		 		// DIP switch inputs. Not debounced. Mapped to DIP_ADDRESS. 
+	input  [N_DIPs-1:0] DIP, 		// DIP switch inputs. Not debounced. Mapped to DIP_ADDRESS. 
 	                                        // Only the least significant 16 bits read from this location are valid. 
-	input  [N_PBs-1:0] PB,  				// PB switch inputs. Not debounced.	Mapped to PB_ADDRESS. 
+	input  [N_PBs-1:0] PB,  		// PB switch inputs. Not debounced.	Mapped to PB_ADDRESS. 
 	                                        // Only the least significant 3 bits read from this location are valid. Order (2 downto 0) ->  BTNL, BTNC, BTNR
 	output reg [N_LEDs_OUT-1:0] LED_OUT, 	// LED(15 downto 8) mapped to LED_ADDRESS. Only the least significant 8 bits written to this location are used.
-	output [6:0] LED_PC, 					// LED(6 downto 0) showing PC(8 downto 2).
-	output reg [31:0] SEVENSEGHEX, 			// 7 Seg LED Display. Mapped to SEVENSEG_ADDRESS. The 32-bit value will appear as 8 Hex digits on the display.
+	output [6:0] LED_PC, 			// LED(6 downto 0) showing PC(8 downto 2).
+	output reg [31:0] SEVENSEGHEX, 		// 7 Seg LED Display. Mapped to SEVENSEG_ADDRESS. The 32-bit value will appear as 8 Hex digits on the display.
 	output reg [7:0] CONSOLE_OUT,           // CONSOLE (UART) Output. Mapped to CONSOLE_ADDRESS. The least significant 8 bits written to this location are sent to PC via UART.
-											// Check if CONSOLE_OUT_ready (CONSOLE_OUT_ready_ADDRESS) is set before writing to this location (especially if your CLK_DIV_BITS is small).
-											// Consecutive STRs to this location not permitted (there should be at least 1 instruction gap between STRs to this location).
-	input	CONSOLE_OUT_ready,				// An indication to the wrapper/processor that it is ok to write to the CONSOLE_OUT (UART hardware).
-	                                        //  This bit should be set in the testbench to indicate that it is ok to write a new character to CONSOLE_OUT from your program.
-	                                        //  It can be read from the address CONSOLE_OUT_ready_ADDRESS.
+						// Check if CONSOLE_OUT_ready (CONSOLE_OUT_ready_ADDRESS) is set before writing to this location (especially if your CLK_DIV_BITS is small).
+						// Consecutive STRs to this location not permitted (there should be at least 1 instruction gap between STRs to this location).
+	input	CONSOLE_OUT_ready,		// An indication to the wrapper/processor that it is ok to write to the CONSOLE_OUT (UART hardware).
+	                                        	//  This bit should be set in the testbench to indicate that it is ok to write a new character to CONSOLE_OUT from your program.
+	                                        	//  It can be read from the address CONSOLE_OUT_ready_ADDRESS.
 	output reg CONSOLE_OUT_valid,           // An indication to the UART hardware that the processor has written a new data byte to be transmitted.
 	input  [7:0] CONSOLE_IN,                // CONSOLE (UART) Input. Mapped to CONSOLE_ADDRESS. The least significant 8 bits read from this location is the character received from PC via UART.
-	                                        // Check if CONSOLE_IN_valid flag (CONSOLE_IN_valid_ADDRESS)is set before reading from this location.
-											// Consecutive LDRs from this location not permitted (needs at least 1 instruction spacing between LDRs).
-											// Also, note that there is no Tx FIFO implemented. DO NOT send characters from PC at a rate faster than 
-											//  your processor (program) can read them. This means sending only 1 char every few seconds if your CLK_DIV_BITS is 26.
-											// 	This is not a problem if your processor runs at a high speed.
+	                                        	// Check if CONSOLE_IN_valid flag (CONSOLE_IN_valid_ADDRESS)is set before reading from this location.
+							// Consecutive LDRs from this location not permitted (needs at least 1 instruction spacing between LDRs).
+							// Also, note that there is no Tx FIFO implemented. DO NOT send characters from PC at a rate faster than 
+							//  your processor (program) can read them. This means sending only 1 char every few seconds if your CLK_DIV_BITS is 26.
+							// 	This is not a problem if your processor runs at a high speed.
 	input  	CONSOLE_IN_valid,               // An indication to the wrapper/processor that there is a new data byte waiting to be read from the UART hardware.
 	                                        // This bit should be set in the testbench to indicate a new character (Else, the processor will only read in 0x00).
-											//  It can be read from the address CONSOLE_IN_valid_ADDRESS.
+							//  It can be read from the address CONSOLE_IN_valid_ADDRESS.
 	output reg CONSOLE_IN_ack,              // An indication to the UART hardware that the processor has read the newly received data byte.
 	                                        // The testbench should clear CONSOLE_IN_valid when this is set.
-	input  RESET,							// Active high. Implemented in TOP as not(CPU_RESET) or Internal_reset (CPU_RESET is red push button and is active low).
-	input  CLK								// Divided Clock from TOP.
+	input  RESET,				// Active high. Implemented in TOP as not(CPU_RESET) or Internal_reset (CPU_RESET is red push button and is active low).
+	input  CLK				// Divided Clock from TOP.
 );
 
 
@@ -113,9 +113,9 @@ localparam DRAM_DEPTH_BITS = 9;
 // Do not use absolute addresses (e.g., using li pseudoinstruction for addresses) for memory/MMIO unless you know what you are doing. If you are building on the sample HelloWorld, use la for SEVENSEG.
 //  Relative addresses (e.g., la pseudoinstruction) works fine for all starting addresses and segment sizes
 
-localparam IROM_BASE = 32'h00000000;   // make sure this is the .txt address set in the assembler/linker, 
-                                            // and the PC default value as well as reset value in **ProgramCounter.v** 
-localparam DATA_MEM_BASE = 32'h00002000;    // make sure this is the .data address set in the assembler/linker
+localparam IROM_BASE = 32'h00000000;		// make sure this is the .txt address set in the assembler/linker, 
+                                            	// and the PC default value as well as reset value in **ProgramCounter.v** 
+localparam DATA_MEM_BASE = 32'h00002000;    	// make sure this is the .data address set in the assembler/linker
 localparam DROM_BASE = DATA_MEM_BASE + 32'h00000000;
 localparam DRAM_BASE = DROM_BASE + 2**DROM_DEPTH_BITS;
 localparam MMIO_BASE = DRAM_BASE + 2**DRAM_DEPTH_BITS;    // assuming MMIO is also in the .data segment
@@ -239,7 +239,7 @@ always@( * ) begin // @posedge CLK only if using synch read for memory
     Instr = ( ( PC[31:IROM_DEPTH_BITS] == IROM_BASE[31:IROM_DEPTH_BITS]) && // To check if address is in the valid range
                 (PC[1:0] == 2'b00) )? // and is word aligned - we do not support instruction sizes other than 32.
                  IROM[PC[IROM_DEPTH_BITS-1:2]] : 32'h00000013 ; // If the address is invalid, the instruction fetched is NOP. 
-                 												// This can be changed to trigger an exception instead if need be.
+                 						// This can be changed to trigger an exception instead if need be.
 end
 
 //----------------------------------------------------------------
@@ -319,7 +319,7 @@ always @(posedge CLK) begin
 end
 // Possible spurious CONSOLE_IN_ack and a lost character if we don't have a MemRead signal. 
 // Alternatively, make sure ALUResult is never the address of UART other than when accessing it.
-// Also, the character received from PC in the CLK cycle immediately following a character read by the processor is lost. 
+// Also, the character received from the PC in the CLK cycle immediately following a character read by the processor is lost. 
 // This is not that much of a problem in practice though.
 
 //----------------------------------------------------------------
