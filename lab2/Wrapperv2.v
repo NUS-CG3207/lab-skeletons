@@ -50,7 +50,7 @@
 /*
 V2:
 To use FPGA block RAMs for instruction and data memories in pipelined version (Allows faster synthesis times and possibly clock rates for larger memory sizes):
-To use this (Disclaimer: Not tested fully), Uncomment line 225. Comment 231 to 233. Change 238, 248, 255, 273 to always@(posedge clk)
+(Disclaimer: Not tested fully), Uncomment line 225. Comment 231 to 233. Change 238, 248, 255, 273 to always@(posedge clk)
 If enabled, Instr, ReadData_in are delayed by 1 cycle. Therefore, what you get can be used as InstrD, ReadDataW directly. MMIO reads are also delayed. 
 The required byte/half-word will still have to be extracted from ReadDataW and zero/sign extended in W stage if using lb/lbu/lh/lhu.
 */
@@ -96,7 +96,7 @@ module Wrapper
 //----------------------------------------------------------------
 // V2: Sizes of various segments, base addresses, and peripheral address offsets.
 //----------------------------------------------------------------
-// Set number of bits for the byte address. 
+// Set the number of bits for the byte address. 
 // Depth (size) = 2**DEPTH_BITS. e.g.,if DEPTH_BITS = 9, depth = 512 bytes = 128 words. 
 // Make sure that the align directive in the assembly programme is set according to the sizes of the various segments.
 // The size of a data segment affects the *next* segment alignment and address.
@@ -109,13 +109,13 @@ localparam DRAM_DEPTH_BITS = 9;
 // Base addresses of various segments
 // The RARS default memory configuration is IROM_BASE = 32'h00400000 and DATA_MEM_BASE = 32'h10010000 in RARS.
 // The RARS default MMIO base is 32'hFFFF0000, but this is hard to support. So we use MMIO_BASE = DRAM_BASE + 2**DRAM_DEPTH_BITS in all memory configurations
-// We use compact memory configuration with .txt at 0 where IROM_BASE = 32'h00000000 and DATA_MEM_BASE = 32'h00002000
+// We use compact memory configuration with .txt at 0 where IROM_BASE = 32'h00000000 and DATA_MEM_BASE = 32'h00002000, but you can change this to either of the other two if you wish.
 // Do not use absolute addresses (e.g., using li pseudoinstruction for addresses) for memory/MMIO unless you know what you are doing. If you are building on the sample HelloWorld, use la for SEVENSEG.
-//  Relative addresses (e.g., la pseudoinstruction) works fine for all starting addresses and segment sizes
+//  Relative addresses (e.g., la pseudoinstruction) work fine for all starting addresses and segment sizes
 
-localparam IROM_BASE = 32'h00000000;		// make sure this is the .txt address set in the assembler/linker, 
+localparam IROM_BASE = 32'h00000000;		// make sure this is the same as the .txt address based on the Memory Configuration set in the assembler/linker 
                                             	// and the PC default value as well as reset value in **ProgramCounter.v** 
-localparam DATA_MEM_BASE = 32'h00002000;    	// make sure this is the .data address set in the assembler/linker
+localparam DATA_MEM_BASE = 32'h00002000;    	// make sure this is the same as the .data address based on the Memory Configuration set in the assembler/linker
 localparam DROM_BASE = DATA_MEM_BASE + 32'h00000000;
 localparam DRAM_BASE = DROM_BASE + 2**DROM_DEPTH_BITS;
 localparam MMIO_BASE = DRAM_BASE + 2**DRAM_DEPTH_BITS;    // assuming MMIO is also in the .data segment
@@ -161,7 +161,7 @@ initial begin
 // Make sure that IROM.mem and DROM.mem (hexadecimal text memory dump from RARS - name it with .mem extension) are added to the project as 'Design Sources'. Alternatively, specify the full path.
 // If you checked "Copy sources into project", make sure that subsequent dumps from RARS are to projectName/projectName.srcs/sources_1/imports/orignalSourceFolderName 
 // "Copy sources into project" might be a bad idea. RARS does not remember the last opened folder, so keep it in a folder that is easier to access.
-// IMP: "Relaunch Simulation" (top menu broken clock-wise button) may not enough if you change your .mem file. Do SIMULATION > Run Simulation > Run Behavioural Simulation.
+	// IMP: "Relaunch Simulation" (top menu broken clock-wise button) may not be enough if you change your .mem file. Do SIMULATION > Run Simulation > Run Behavioural Simulation.
 // In simulation, check the memory contents under test_Wrapper>dut (Wrapper)> IROM (and other memories) if unsure the correct contents are used.
 $readmemh("IROM.mem", IROM);
 $readmemh("DROM.mem", DROM);	// This will generate a warning of having more than necessary data as the assembler dumps the entire data segment including DROM and MMIO,
@@ -237,7 +237,7 @@ end
 //----------------------------------------------------------------
 always@( * ) begin // @posedge CLK only if using synch read for memory
     Instr = ( ( PC[31:IROM_DEPTH_BITS] == IROM_BASE[31:IROM_DEPTH_BITS]) && // To check if address is in the valid range
-                (PC[1:0] == 2'b00) )? // and is word aligned - we do not support instruction sizes other than 32.
+	     (PC[1:0] == 2'b00) )? // and is word-aligned - we do not support instruction sizes other than 32.
                  IROM[PC[IROM_DEPTH_BITS-1:2]] : 32'h00000013 ; // If the address is invalid, the instruction fetched is NOP. 
                  						// This can be changed to trigger an exception instead if need be.
 end
@@ -320,7 +320,7 @@ end
 // Possible spurious CONSOLE_IN_ack and a lost character if we don't have a MemRead signal. 
 // Alternatively, make sure ALUResult is never the address of UART other than when accessing it.
 // Also, the character received from the PC in the CLK cycle immediately following a character read by the processor is lost. 
-// This is not that much of a problem in practice though.
+	// This is not that much of a problem in practice though (need to check if it still exists after adding MemRead).
 
 //----------------------------------------------------------------
 // Debug LEDs
