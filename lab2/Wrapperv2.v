@@ -161,8 +161,8 @@ initial begin
 // Make sure that IROM.mem and DROM.mem (hexadecimal text memory dump from RARS - name it with .mem extension) are added to the project as 'Design Sources'. Alternatively, specify the full path.
 // If you checked "Copy sources into project", make sure that subsequent dumps from RARS are to projectName/projectName.srcs/sources_1/imports/orignalSourceFolderName 
 // "Copy sources into project" might be a bad idea. RARS does not remember the last opened folder, so keep it in a folder that is easier to access.
-	// IMP: "Relaunch Simulation" (top menu broken clock-wise button) may not be enough if you change your .mem file. Do SIMULATION > Run Simulation > Run Behavioural Simulation.
-// In simulation, check the memory contents under test_Wrapper>dut (Wrapper)> IROM (and other memories) if unsure the correct contents are used.
+	// IMP: "Relaunch Simulation" (top menu broken clock-wise button) may not be enough if you change your .mem file. Do SIMULATION > Run Simulation > Run Behavioural Simulation. In simulation, check the memory contents under test_Wrapper>dut (Wrapper)> IROM (and other memories) if unsure the correct contents are used.
+// If you click Generate Bitstream after updating the .mem file, Vivado does not rerun synthesis using the new file, as it does not know that the file was modified externally. Rerun the synthesis and then bitstream generation though Vivado says it is up to date. 
 $readmemh("IROM.mem", IROM);
 $readmemh("DROM.mem", DROM);	// This will generate a warning of having more than necessary data as the assembler dumps the entire data segment including DROM and MMIO,
 								// This is ok as only the first part of it will be used to initialize DROM.
