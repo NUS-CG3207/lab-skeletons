@@ -45,8 +45,8 @@ int main()
         // display the magnitude on seven segment display
         *SEVENSEG_ADDR = accel_reading;
 
-        // print the raw binary value and magnitude directly. 
-        // Configure serial terminal app to display as hex.
+        // Print the raw binary value and magnitude directly. Configure serial terminal app to display as hex. 
+        // If you need to print properly formatted text, the characters sent to UART should be printable (ASCII)
         for(int i=24; i>=0; i-=8) 
         {
             // print the raw binary value
@@ -144,22 +144,3 @@ void delay(unsigned int cycles)
     unsigned int starting_count = *CYCLECOUNT_ADDR;
     while(*CYCLECOUNT_ADDR < starting_count + cycles);
 }
-
-
-// Caution: Cycle counter rolls over at 42 seconds at 100 MHz. 
-    // Change counter width and bits used in Wrapper.v for a longer duration, but lower cycles precision
-
-// OLED_CTRL[3:0] - 0x0: vary_pix_data_mode; 0x1: vary_COL_mode (x); 0x2: vary_ROW_mode (y)
-    // Change that triggers a write. We can vary one of them (e.g., column) while keeping the 
-    // other two the same, which can be efficient like in this example program.
-// OLED_CTRL[7:4] - 0x0: 7-bit colour mode; 0x1: 16-bit colour mode; 0x2: 24-bit colour mode
-// 7-bit colour mode: 1 byte per pixel, memory efficient especially if loading bitmapped images
-// 16-bit colour mode: Highest colour depth supported by the OLED in a compact representation. OLED input format
-// 24-bit colour mode: Similar to standard displays, but some LSBs are not used. Easy to debug. Wrapper output format
-// If you want only a specific axis or temperature, use a combination of logical operators and shift
-    // e.g., extract Y using (*ACC_DATA_ADDR & 0x0000FF00) >> 8
-
-// Where possible, it is a good idea to test your algorithms in a standard C compiler 
-    // e.g., masking and shifts to deal with bytes within a word.
-
-// In order to print a properly formatted text, the characters sent to UART should be printable (ASCII)
