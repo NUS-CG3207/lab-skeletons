@@ -52,26 +52,7 @@ module RV(
     output [31:0] WriteData_out		// v2: Renamed to support sb/sw
     );
     
-    // v2: Important info regarding alignment
-    // CAUTION: Unaligned data reads and writes are NOT supported. 
-    // If the instruction is lh/lhu/sh (load/store halfword), the data memory address should be divisble by 2 (the last bit should be 0)
-    // If the instruction is lw/sw, the data memory address should be divisible by 4 (the last two bits should be 0s)
-    
-    // Lab 4 potential enhancement: Unaligned requests can be detected and used to generate interrupts by editing the wrapper.
-    // This interrupt could be used to do a software emulation of unaligned access via aligned access.
-    
-    // ReadData_in is the whole word that contains the word/half-word/byte you want. 
-    //  You need to extract out what you want, with sign/zero(u) extension as required by the instruction.
-    //  For example, when running lbu (load byte unsigned) instruction, if the last 2 bits of the address is 2'b01, and the address location has 8'hAB, 
-    //      ReadData_in is 32'hxxxxABxx.ReadData, the word to be written into the destination register is 32'h000000AB (0s as MSBs as it is lbu. 
-    //      Else,ReadData_in[15] should be replicated to the 24 MSBs. You have to do this conversion.
-
-    // WriteData_out is a word, with word/byte/half-word aligned to where you wish to write it to within the word.
-    //  The MemWrite_out bits of every byte to be modified should be 1.
-    //  For example,when running sb (store byte) instruction, if the last 2 bits of the address is 2'b10 and the byte to be written is 8'hAB (or 32'b000000AB),
-    //      WriteData_out should be 32'hxxABxxxx and MemWrite_out should be 4'h0100.You have to do this conversion.
-    //  Another example: when running sh (store halfword), if the last 2 bits of the address is 2'b10 and the half-word to be written is 16'hABCD (or 32'h0000ABCD),
-    //      WriteData_out should be 32'hABCDxxxx and MemWrite_out should be 4'h1100.You have to do this conversion.
+    // v2: Please read Lab 4 Enhancement: Implementing additional instructions on how to support lb/lbu/lh/lhu/sb/sh
         
     //RV Signals
     // v2: <Added to support lb/lbu/lh/lhu/sb/sh>
