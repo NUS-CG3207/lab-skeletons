@@ -65,7 +65,7 @@ module RV(
     //  For example, when running lbu (load byte unsigned) instruction, if the last 2 bits of the address is 2'b01, and the address location has 8'hAB, 
     //      ReadData_in is 32'hxxxxABxx.ReadData, the word to be written into the destination register is 32'h000000AB (0s as MSBs as it is lbu. 
     //      Else,ReadData_in[15] should be replicated to the 24 MSBs. You have to do this conversion.
-    // >> give an example here
+
     // WriteData_out is a word, with word/byte/half-word aligned to where you wish to write it to within the word.
     //  The MemWrite_out bits of every byte to be modified should be 1.
     //  For example,when running sb (store byte) instruction, if the last 2 bits of the address is 2'b10 and the byte to be written is 8'hAB (or 32'b000000AB),
