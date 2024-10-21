@@ -11,7 +11,7 @@
 #define PB_OFF  0x08 //RO
 #define UART_OFF 0x0C //RW
 #define UART_RX_VALID_OFF 0x10 //RO, status bit
-#define UART_RX_READY_OFF 0x14 //RO, status bit
+#define UART_TX_READY_OFF 0x14 //RO, status bit
 #define SEVENSEG_OFF 0x18 //WO
 #define CYCLECOUNT_OFF 0x1C //WO
 #define OLED_COL_OFF 0x20 //WO
@@ -32,7 +32,7 @@ int main()
 {
     asm volatile("li sp, %0" : : "i" (STACK_INIT)); //inline assembly to init sp. Registers cant be accessed explicitly in pure C
     volatile unsigned int* ACCEL_Data_ADDR = (unsigned int*) (MMIO_BASE+ACCEL_DATA_OFF); // temp, x, y, z
-    volatile unsigned int* UART_TX_ready_ADDR = (unsigned int*) (MMIO_BASE+UART_RX_READY_OFF);
+    volatile unsigned int* UART_TX_ready_ADDR = (unsigned int*) (MMIO_BASE+UART_TX_READY_OFF);
     volatile unsigned int* UART_ADDR = (unsigned int*) (MMIO_BASE+UART_OFF);
     volatile unsigned int* SEVENSEG_ADDR = (unsigned int*) (MMIO_BASE+SEVENSEG_OFF);
 

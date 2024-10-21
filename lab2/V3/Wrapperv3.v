@@ -83,7 +83,7 @@ localparam DIP_OFF 		= 8'h04; //RO
 localparam PB_OFF  		= 8'h08; //RO
 localparam UART_OFF 		= 8'h0C; //RW
 localparam UART_RX_VALID_OFF 	= 8'h10; //RO, status bit
-localparam UART_RX_READY_OFF 	= 8'h14; //RO, status bit
+localparam UART_TX_READY_OFF 	= 8'h14; //RO, status bit
 localparam SEVENSEG_OFF 	= 8'h18; //WO
 localparam CYCLECOUNT_OFF 	= 8'h1C; //RO
 localparam OLED_COL_OFF 	= 8'h20; //WO
@@ -176,7 +176,7 @@ always@(*) begin
 			PB_OFF[MMIO_DEPTH_BITS-1:2]: dec_PB <= 1'b1;
 			UART_OFF[MMIO_DEPTH_BITS-1:2]: dec_UART <= 1'b1;
 			UART_RX_VALID_OFF[MMIO_DEPTH_BITS-1:2]: dec_UART_RX_valid <= 1'b1;
-			UART_RX_READY_OFF[MMIO_DEPTH_BITS-1:2]: dec_UART_TX_ready <= 1'b1;
+			UART_TX_READY_OFF[MMIO_DEPTH_BITS-1:2]: dec_UART_TX_ready <= 1'b1;
 			SEVENSEG_OFF[MMIO_DEPTH_BITS-1:2]: dec_SEVENSEG <= 1'b1;
 			CYCLECOUNT_OFF[MMIO_DEPTH_BITS-1:2]: dec_CYCLECOUNT <= 1'b1;
 			OLED_COL_OFF[MMIO_DEPTH_BITS-1:2]: dec_OLED_COL <= 1'b1;
