@@ -32,8 +32,6 @@
 ----------------------------------------------------------------------------------
 */
 
-//-- Save waveform file and add it to the project
-//-- Reset and launch simulation if you add internal signals to the waveform window
 // Change wire to reg if assigned inside a procedural (always) block. However, where it is easy enough, use assign instead of always.
 // A 2-1 multiplexing can be done easily using an assign with a ternary operator
 // For multiplexing with number of inputs > 2, a case construct within an always block is a natural fit. DO NOT to use nested ternary assignment operator as it hampers the readability of your code.
