@@ -318,7 +318,7 @@ end
 reg [7:0] OLED_ctrl_reg = 8'd0;// control register. 
 // Lower nibble controlling whether the row or column or mode is varied. Upper nibble controlling the colour mode. 
 // [3:0] - 0000: vary_pix_data_mode; 0001: vary_COL_mode (x); 0010: vary_ROW_mode (y)
-// [7:4] - 0000: 7-bit colour mode; 0001: 16-bit colour mode; 0010: 24-bit colour mode
+// [7:4] - 0000: 8-bit colour mode; 0001: 16-bit colour mode; 0010: 24-bit colour mode
 always@(posedge CLK) begin
 	case (OLED_ctrl_reg[3:0]) // mapping OLED_Write direclty to TOP will write at the fast clock rate. Not an issue, but unnecessary writes
 		4'b0001: OLED_Write <= MemWrite_out[0] && dec_OLED_COL;	//vary_COL_mode (x)
@@ -345,9 +345,9 @@ always@(posedge CLK) begin
 				if( MemWrite_out[0] && dec_OLED_DATA )
 					OLED_Data[7:0] <= WriteData_out[7:0];
 			end
-		default: 		// 7-bit colour mode 2R-3G-2B (1 byte) - LSB byte, lower half-word, and whole word accessible
+		default: 		// 8-bit colour mode 3R-3G-2B (1 byte) - LSB byte, lower half-word, and whole word accessible
 			if( MemWrite_out[0] && dec_OLED_DATA )
-				OLED_Data <= { WriteData_out[6:5], 6'd0, WriteData_out[4:2], 5'd0, WriteData_out[1:0], 6'd0}; 
+				OLED_Data <= { WriteData_out[7:5], 5'd0, WriteData_out[4:2], 5'd0, WriteData_out[1:0], 6'd0}; 
 	endcase        
 end
 
