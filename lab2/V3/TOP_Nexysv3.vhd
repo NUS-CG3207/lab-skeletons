@@ -6,10 +6,11 @@
 -- Design Name: 	TOP
 -- Target Devices: Nexys 4 (Artix 7 100T)
 -- Description: Top level module for Synthesis. Not meant to be simulated
---
--- Dependencies: Uses uart.vhd by (c) Peter A Bennett
---
--- Revision 0.03
+-- Dependencies: 
+-- uart.vhd by (c) Peter A Bennett, https://github.com/pabennett/uart
+-- PMOD OLED RGB controller by (c) Yannick Bornat, https://yannick-bornat.enseirb-matmeca.fr/wiki/doku.php/en202:pmodoledrgb
+-- ADXL362Ctrl and SPI controllers by (c) Digilent, https://github.com/Digilent/Nexys-4-DDR-OOB
+-- Revision 0.04
 -- Additional Comments: See the notes below. The interface (entity) as well as implementation (architecture) can be modified
 ----------------------------------------------------------------------------------
 --	License terms :
