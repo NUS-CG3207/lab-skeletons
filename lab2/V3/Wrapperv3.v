@@ -63,7 +63,7 @@ module Wrapper
 	output reg [23:0] OLED_Data,		// 24-bit pixel so as to see easily on the display. <5R, 6G, 8B>, each extended to 8 bits left aligned.
 	input [31:0] ACCEL_Data,		// Packed <Temp, X, Y, Z> from MSB to LSB. X, Y, Z are in +/-2g range, 8-bit signed.
 	input ACCEL_DReady,			// Accelerometer data ready signal. Mostly not necessary unless you are reading at a very high rate.
-	input  RESET,				// Active high. Implemented in TOP as not(CPU_RESET) or Internal_reset (CPU_RESET is red push button and is active low).
+	input  RESET,				// Active high. Implemented in TOP as not(BTND) or Internal_reset.
 	input  CLK				// Divided Clock from TOP.
 );
 
